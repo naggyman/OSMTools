@@ -1,0 +1,36 @@
+extends layout
+
+block content
+	.jumbotron
+		.container
+			h3 Welcome back to OSMTools!
+	.container
+		if nextThings.birthdays
+			.col-sm-4.panel.panel-success
+				.panel-heading
+					h3.panel-title Birthdays
+				.panel-body
+					each birthday in nextThings.birthdays
+						p #{birthday.firstname} #{birthday.lastname} (#{birthday.age}) - #{birthday.dob}
+
+		if nextThings.programme
+			.col-sm-4.panel.panel-warning
+				.panel-heading
+					h3.panel-title Programme
+				.panel-body
+					each programme in nextThings.programme
+						p #{programme.title} - #{programme.meetingdate}
+
+		if nextThings.news[0]
+			.col-sm-4.panel.panel-danger
+				.panel-heading
+					h3.panel-title News
+				.panel-body
+					each item in nextThings.news
+						-var id = item.ts
+						-var idhash = "#" + id;
+						h3 #{item.title}
+						h4 #{item.date}
+						button(data-toggle="collapse" data-target=idhash).btn.btn-default Extend
+						div(id=id class="collapse")
+							#{item.msg}

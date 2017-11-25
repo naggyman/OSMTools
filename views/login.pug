@@ -1,0 +1,19 @@
+extends layout
+
+block content
+	.container
+		h3 Login to OSMTools
+		h5 Please log in with your OSM Details
+		case notif
+			when "userpass"
+				.alert.alert-danger Incorrect Username/Password
+			when "loggedout"
+				.alert.alert-success Successfully Logged Out
+
+		form(method='POST' action='/api/login-do').form-signin
+			input(type='hidden' id='redir' value=redirect name='redir')
+			div
+				input.form-control(type='text' id='email' placeholder='Email Address' name='email')
+			div
+				input.form-control(type='password' id='password' placeholder='Password' name='password')
+				button.btn.btn-primary(type='submit') Log In

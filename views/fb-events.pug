@@ -1,0 +1,28 @@
+extends layout
+
+block content
+	.container
+		h1 Facebook Test!
+		each event in user
+			h2 #{event.name}
+			- var href = "/fb/event/" + event.id
+			a(href=href) OSMTools View &nbsp;
+			- var hreff = "https://facebook.com/events/" + event.id
+			a(href=hreff) Facebook View &nbsp;
+			if event.start_time
+				- var startdate = new Date(event.start_time)
+				- var startDateDate = startdate.getFullYear() + "/" + (startdate.getMonth() + 1) + "/" + startdate.getDate()
+				- var startDateTime = startdate.toTimeString().substring(0, 8)
+			else
+				- var startDateDate = ""; var startDateTime = "";
+			if event.end_time
+				- var enddate = new Date(event.end_time)
+				- var endDateDate = enddate.getFullYear() + "/" + (enddate.getMonth() + 1) + "/" + enddate.getDate()
+				- var endDateTime = enddate.toTimeString().substring(0, 8)
+			else
+				- var endDateDate = ""; var endDateTime = "";
+
+			if event.place
+				- var link = "/api/event/create?name=" + event.name + "&location=" + event.place.name + "&startdate=" + startDateDate + "&starttime=" + startDateTime + "&enddate=" + endDateDate + "&endtime=" + endDateTime + "&description=" + event.description;
+				a(href=link) Add to OSM
+			p #{event.description}

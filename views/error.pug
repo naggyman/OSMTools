@@ -1,0 +1,13 @@
+extends layout
+
+block content
+	.container
+		h1 Error 😞😭🔥🤯
+		if errorType == 'noPermission'
+			p You do not have permission to view #{url}
+		else if errorType == 'noSectionPerm'
+			p You do not have permission to view this section.
+			p In order to gain permission please log into full OSM, go to Account > Account Preferences > External Access and allow at least 'read' access for each section that you would like to manage.
+			p Note that currently OSMTools is currently unable to manage a 'Waiting List' section
+		else
+			p Unable to find #{url}

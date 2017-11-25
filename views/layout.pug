@@ -1,0 +1,68 @@
+doctype html
+html
+	head
+		link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css')
+		link(href="https://fonts.googleapis.com/css?family=Inconsolata", rel="stylesheet")
+		title= title + " | OSMTools"
+		meta(name="viewport" content="width=device-width, initial-scale=1")
+		script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js')
+		script(src=`https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js`)
+		script(crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js")
+		script(crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js")
+		script.
+			$(window).on('resize', function () {$('#mainBox').css('padding-top', parseInt($('#mainNav').css("height")));});
+			$(window).on('load', function () {$('#mainBox').css('padding-top', parseInt($('#mainNav').css("height")));});
+	body
+		div(id="mainnavbar")
+			div(id="mainNav").navbar.navbar-inverse.navbar-fixed-top
+				.container-fluid
+					.navbar-header
+						a.navbar-brand(href='/') OSMTools
+					ul.nav.navbar-nav
+						if includes.loggedIn && includes.section && includes.avaliable
+							li.dropdown
+								a(href="#", data-toggle='dropdown').dropdown-toggle
+									strong #{includes.section.string}
+									span.caret
+									ul.dropdown-menu
+										each section in includes.avaliable
+											if section.group + ": " + section.name != includes.section.string
+												- var href = "/api/select-section/" + section.id + "?redir=" + includes.request;
+												li: a(href=href)
+													p #{section.group}: #{section.name}
+							li.dropdown
+								a(href="#", data-toggle='dropdown').dropdown-toggle
+									strong #{includes.section.termString}
+									span.caret
+									ul.dropdown-menu
+										each term in includes.section.terms
+											- var href = "/api/select-term/" + term.termid + "?redir=" + includes.request;
+											li: a(href=href)
+												p #{term.name}
+
+
+							li: a(href='/members/') Members
+							li: a(href='/emails/lists/') Email Lists
+							li: a(href='/fb/events') Facebook Events
+
+
+					ul.nav.navbar-nav.navbar-right
+						if includes.loggedIn
+							li
+								a(href='/user') Profile
+							li
+								a(href='/logout') Logout
+						else
+							li
+								a(href='/login') Login
+
+
+		div(id="mainBox")
+			block content
+
+		hr
+
+
+		.footer
+			.container
+				h8: Copyright &copy; #{new Date().getFullYear()} Morgan French-Stagg

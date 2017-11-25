@@ -1,0 +1,57 @@
+extends layout
+
+block content
+	.container
+		script.
+			var postData = function(facebookID, osmID, name){
+				console.log("sel" + osmID);
+				var value = document.getElementById("sel" + osmID).value
+				var http = new XMLHttpRequest();
+				var url = "/api/youth/create";
+				var params = "facebookID=" + facebookID + "&osmID=" + osmID + "&name=" + name + "&permissions={emailSection: true}"
+				http.open("POST", url, true);
+				//Send the proper header information along with the request
+				http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+				http.onreadystatechange = function() {//Call a function when the state changes.
+					if(http.readyState == 4 && http.status == 200) {
+						console.log(http.responseText);
+					}
+				}
+				http.send(params);
+			}
+			var getIf = function(member){
+				var button = document.getElementById("but" + member);
+
+			}
+			var updateSelect = function(member){
+				console.log(member.scoutid)
+				var selection = document.getElementById("sel" + member).value;
+				var name = document.getElementById("name" + member).innerHTML;
+				postData(selection, member, name);
+			}
+		h3 Facebook Integration Setup
+		h4 (Step 2/2) Associate OSM Members with Facebook Accounts
+		p Please select a Facebook Account (if one exists) for each member of your OSM Section. This will associate that Facebook Account with the OSM Member
+
+		a(href="/fb/setup/reselectGroup").btn.btn-primary << Change Selected Group
+		a(href="/fb/events").btn.btn-primary Skip >>
+
+		each member in members
+			.row
+				.col-md-3
+					- scoutid = "name" + member.scoutid
+					div(id=scoutid) #{member.firstname} #{member.lastname}
+				.col-md-7
+					.form-group
+						.row
+							- var select = "sel" + member.scoutid
+							select(id=select).form-control
+								option(value='0') Select Facebook User
+								each fbmember in fbusers
+									if fbmember.name === member.firstname + " " + member.lastname
+										option(value=fbmember.id, selected=true) #{fbmember.name} (Suggested - Facebook)
+									else
+										option(value=fbmember.id, selected=false) #{fbmember.name}
+
+							button(id="but" + select, onclick="updateSelect('" + member.scoutid + "')").btn.btn-primary Add to Database

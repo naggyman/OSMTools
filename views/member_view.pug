@@ -1,0 +1,235 @@
+extends layout
+
+block content
+	script.
+		var postData = function(column, input){
+			var s = document.getElementById('stateChanged');
+			s.innerHTML = "Saving changes..."
+			var thismember= !{JSON.stringify(member)};
+			var thissection= !{JSON.stringify(includes.section)};
+			var scoutid = thismember.scoutid;
+			var sectionid = thissection.section;
+			var value = document.getElementById(input).value;
+			var http = new XMLHttpRequest();
+			var url = "/api/members/update";
+			var params = "scoutid=" + scoutid + "&column=" + column + "&value=" + value + "&sectionid=" + sectionid + "&context=members";
+			http.open("POST", url, true);
+
+			//Send the proper header information along with the request
+			http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+			http.onreadystatechange = function() {
+				console.log(http.responseText);
+				var response = JSON.parse(http.responseText);
+				if(response.ok === true){
+					s.innerHTML = "Changes Saved!"
+				}
+				else{
+					s.innerHTML = "ERROR Saving Changes"
+				}
+			}
+			http.send(params);
+		}
+		var updateSectionSelect = function(){
+			var type = document.getElementById('agerange');
+			var selectionbox = document.getElementById('sectionSelect');
+			console.log(type.value + " " + selectionbox.value)
+			selectionbox.innerHTML = "<option> Loading Sections... </option>"
+
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET', '/api/getSections/' + type.value, true);
+			xhr.responseType = 'json';
+			xhr.onload = function() {
+				var status = xhr.status;
+				if (status === 200) {
+					console.log(xhr.response);
+					selectionbox.innerHTML = ""
+					xhr.response.items.forEach((item) => {
+						var option = document.createElement('option');
+						option.id = item.sectionid;
+						option.text = item.name;
+						selectionbox.add(option);
+					});
+					//callback(null, xhr.response);
+				} else {
+					//callback(status, xhr.response);
+				}
+			};
+			xhr.send();
+		}
+		var copyUser = function(){
+			var options = document.getElementById('sectionSelect');
+			var thismember= !{JSON.stringify(member)};
+			var scoutid = thismember.scoutid;
+			var params = "scouts=" + scoutid + "&targetSection=" + options[options.selectedIndex].id
+			var space = document.getElementById('alertSpace')
+			space.innerHTML = "<div class='alert alert-warning'>Copying Member...</div>";
+			var xhr = new XMLHttpRequest();
+			xhr.open('POST', '/api/members/copy', true);
+			xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+			xhr.onreadystatechange = function() {
+				var response = JSON.parse(xhr.responseText);
+				if(response.ok === true){
+					space.innerHTML = "<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Success!</strong> Member Copied Successfully</br>A leader on the recieving section must now approve the copy request</div>";
+				}
+				else{
+					space.innerHTML = "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Error!</strong>Unable to copy user</div>";
+				}
+			}
+			xhr.send(params);
+		}
+		var onclickCopy = function(){
+			var selection = document.getElementById('sectionSelect');
+			console.log(selection.options[selection.selectedIndex].id)
+		}
+	.jumbotron
+		.container
+			.div(id="alertSpace")
+			a(href='/members/', role="button").btn.btn-primary << Back to Member List
+		.container(style="margin-top:30px")
+			.col-md-3
+				img(src=member.photoURL, style="border-radius: 25px;")
+			.col-md-7
+				h1
+					.firstnameTag #{member.firstname}
+					.lastnameTag #{member.lastname}
+				p Age: #{member.age}
+				if member.others
+					p Also a Member Of #{member.others}
+			.col-md-2
+				.btn-group-vertical
+					-var edit = '/members/edit/' + member.scoutid
+					a(href='#', data-toggle="modal", data-target="#editUser").btn.btn-success Edit
+					a(href='#', data-toggle="modal", data-target="#deleteUser").btn.btn-danger Delete
+					a(href='#', data-toggle="modal", data-target="#transferUser").btn.btn-danger Transfer
+					a(href='#', data-toggle="modal", data-target="#copyUser").btn.btn-danger Copy/Share
+					a(href='#', data-toggle="modal", data-target="#emailUser").btn.btn-info Email User
+					a(href='#', role="button").btn.btn-info Call User
+	.container(style="margin-top:20px")
+		.panel.panel-success
+			.panel-body
+				p: strong Date of Birth #{member.dob}
+				p: strong Started Movement #{member.started}
+				p: strong Age #{member.age}
+				p: strong SCOUT ID Number #{member.scoutid}
+	.container(style="margin-top:30px")
+		div(class="panel-group", id="accordion")
+			each group in memberDetails
+				if group.columns[0]
+					-var href = group.identifier
+					-var hrefhash = "#" + href
+					.panel.panel-default
+						.panel-heading
+							h4: a(data-toggle="collapse", data-parent="#accordion", href=hrefhash) #{group.name}
+						div(id=href).panel-collaspe.collapse
+							each row in group.columns
+								if row.value
+									.panel-body #{row.label}: #{row.value}
+	div(id="editUser", role="dialog").modal.fade
+		.modal-dialog
+			.modal-content
+				h4.modal-header Editing: #{member.firstname} #{member.lastname}
+				- var membere = "/members/view/" + member.scoutid
+				- var firstname = member.firstname
+				- var lastname = member.lastname
+				- var dob = member.dob
+				- var startedsection = member.startedsection
+				- var started = member.started
+				.modal-body
+					.input-group
+						.input-group-addon First Name
+						input(id='firstnameBox', type='text', class='form-control', name='firstnameBox', placeholder='First Name', value=firstname, onchange="postData('firstname', 'firstnameBox');")
+						.input-group-addon Last Name
+						input(id='lastnameBox', type='text', class='form-control', name='lastnameBox', placeholder='First Name', value=lastname, onchange="postData('lastname', 'lastnameBox');")
+					.input-group
+						.input-group-addon Date of Birth
+						input(id='dobBox', type='text', class='form-control', name='dobBox', placeholder='First Name', value=dob, onchange="postData('dob', 'dobBox');")
+					.input-group
+						.input-group-addon Started Section
+						input(id='startedsectionBox', type='text', class='form-control', name='startedsectionBox', placeholder='First Name', value=startedsection, onchange="postData('startedsection', 'startedsectionBox');")
+						.input-group-addon Started Movement
+						input(id='startedBox', type='text', class='form-control', name='startedBox', placeholder='First Name', value=started, onchange="postData('started', 'startedBox');")
+				.modal-footer
+					p#stateChanged All Changes Saved!
+					button(type="button", data-dismiss="modal").btn.btn-default Exit
+	div(id="emailUser", role="dialog").modal.fade
+		.modal-dialog
+			.modal-content
+				h4.modal-header Send an Email
+				.modal-body
+					.form
+						.form-group
+							label(for='email') Email Address:
+							input(type='email', class='form-control' id='email')
+						.form-group
+							label(for='subject') Subject:
+							input(type='subject', class='form-control' id='subject')
+						.form-group
+							label(for='body') Email:
+							textarea(type='body', class='form-control' id='body')
+				.modal-footer
+					button(type="button", data-dismiss="modal").btn.btn-accept Send
+					button(type="button", data-dismiss="modal").btn.btn-default Exit
+	div(id="deleteUser", role="dialog").modal.fade
+		.modal-dialog
+			.modal-content
+				h4.modal-header Are you sure you want to delete #{member.firstname}
+				.modal-body
+					button(type="button", data-dismiss="modal").btn.btn-danger Delete
+					button(type="button", data-dismiss="modal").btn.btn-default Exit
+	div(id="transferUser", role="dialog").modal.fade
+		.modal-dialog
+			.modal-content
+				h4.modal-header Transfer #{member.firstname} #{member.lastname}
+				.modal-body
+					p Select the group which you would like to transfer #{member.firstname} to:
+				.modal-footer
+					button(type="button", data-dismiss="modal").btn.btn-danger Transfer
+					button(type="button", data-dismiss="modal").btn.btn-default Exit
+	div(id="copyUser", role="dialog").modal.fade
+		.modal-dialog
+			.modal-content
+				h4.modal-header Copy/Share #{member.firstname} #{member.lastname}
+				.modal-body
+					p Select the group which you would like to copy/share #{member.firstname} to:
+					.form
+						.form-group
+							select(type='agerange', id='agerange', onchange='updateSectionSelect()').form-control
+								option(value='') Age Range
+								option(value='nzkeas') Keas
+								option(value='nzcubs') Cubs
+								option(value='nzscouts') Scouts
+								option(value='nzventurers') Venturers
+								option(value='nzrovers') Rovers
+								option(value='nzadults') Leaders
+								option(value='nzcommissioners') Local Teams
+								option(value='nzwaiting') Waiting List
+							select(type='sectionSelect', id='sectionSelect').form-control
+								option Select a Section
+				.modal-footer
+					button(type="button", data-dismiss="modal", onclick='copyUser()').btn.btn-danger Copy/Share
+					button(type="button", data-dismiss="modal").btn.btn-default Exit
+	script.
+		var thismember= !{JSON.stringify(member)};
+		var thissection= !{JSON.stringify(includes.section)};
+		console.log(thissection.name);
+		var getText = function(url, callback) {
+			var xhr = new XMLHttpRequest();
+			console.log(url);
+			xhr.open('GET', url, true);
+			xhr.responseType = 'text/plain';
+			xhr.onload = function() {
+				var status = xhr.status;
+				if (status === 200) {
+					callback(null, xhr.response);
+				}
+				else {
+					callback(status, xhr.response);
+				}
+			};
+			xhr.send();
+		};
+		$(window).on('load', function () {
+			getText('/api/email/addresses/' + thissection.section + '/' + thismember.scoutid, function(error, data){$("input[type='email']").val(data);})
+		});

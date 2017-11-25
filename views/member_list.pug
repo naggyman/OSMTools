@@ -1,0 +1,19 @@
+extends layout
+
+block content
+	.container-fluid
+		h1 Current Members
+		.data-block
+			.row
+				each member in memberList
+						.col-md-3
+							- var href = "/members/view/" + member.scoutid;
+							.thumbnail
+								a(href=href)
+									img(src=member.photoURL, style='border-radius: 15px;')
+								.caption
+									.container
+										h2 #{member.firstname} #{member.lastname}
+										p #{member.patrol_role_level_label}
+											b.label.label-default #{member.scoutid}
+										a(href=href, role="button").btn.btn-primary More Info

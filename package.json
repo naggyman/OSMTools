@@ -1,0 +1,16 @@
+{
+  "name": "osm-api",
+  "version": "1.0.0",
+  "description": "Test API for connecting to OSM",
+  "main": "osmtools.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "Morgan French-Stagg",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.4",
+    "pug": "^2.0.0-rc.3",
+    "request": "^2.81.0"
+  }
+}

@@ -1,0 +1,45 @@
+extends layout
+
+block content
+	.container
+		script.
+			var postData = function(column, value){
+				var thismember= !{JSON.stringify(member)};
+				var thissection= !{JSON.stringify(includes.section)};
+				var scoutid = thismember.scoutid;
+				var sectionid = thissection.section;
+				var http = new XMLHttpRequest();
+				var url = "/api/members/update";
+				var params = "scoutid=" + scoutid + "&column=" + column + "&value=" + value + "&sectionid=" + sectionid + "&context=members&userid=5337&secret=7fa0a438956b6dd5a93025f8a3c7dfcc&token=29de2b52d106ca6b27317d2ff8392fd8&apiid=136";
+				http.open("POST", url, true);
+
+				//Send the proper header information along with the request
+				http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+				http.onreadystatechange = function() {//Call a function when the state changes.
+					if(http.readyState == 4 && http.status == 200) {
+						console.log(http.responseText);
+					}
+				}
+				http.send(params);
+			}
+		h1 Editing: #{member.firstname} #{member.lastname}
+		- var membere = "/members/view/" + member.scoutid
+		a(href=membere, role="button").btn.btn-primary << Back to Member View
+		- var firstname = member.firstname
+		- var lastname = member.lastname
+		- var dob = member.dob
+		- var startedsection = member.startedsection
+		- var started = member.started
+		.input-group
+			.input-group-addon First Name
+			input(id='firstnameBox', type='text', class='form-control', name='firstnameBox', placeholder='First Name', value=firstname, onchange="postData('firstname', document.getElementById('firstnameBox').value);")
+			.input-group-addon Last Name
+			input(id='lastnameBox', type='text', class='form-control', name='lastnameBox', placeholder='First Name', value=lastname, onchange="postData('lastname', document.getElementById('lastnameBox').value);")
+		.input-group
+			.input-group-addon Date of Birth
+			input(id='dobBox', type='text', class='form-control', name='dobBox', placeholder='First Name', value=dob, onchange="postData('dob', document.getElementById('dobBox').value);")
+			.input-group-addon Started Section
+			input(id='startedsectionBox', type='text', class='form-control', name='startedsectionBox', placeholder='First Name', value=startedsection, onchange="postData('startedsection', document.getElementById('startedsectionBox').value);")
+			.input-group-addon Started Movement
+			input(id='startedBox', type='text', class='form-control', name='startedBox', placeholder='First Name', value=started, onchange="postData('started', document.getElementById('startedBox').value);")

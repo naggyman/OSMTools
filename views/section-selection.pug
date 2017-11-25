@@ -1,0 +1,23 @@
+extends layout
+
+block content
+	.container
+		.row
+			h1 Select Section
+			h3 Please select the section in OSM which you would like to manage
+		.row
+			select#section.form-control
+				option(value='0') -- Select Section --
+				each section in sectionsArray
+					option(value=section.id) #{section.group}: #{section.name}
+		.row
+			button#search.btn.btn-success.btn-md Select Section
+			script.
+				var button = document.getElementById("search");
+				button.addEventListener("click", submit);
+
+				function submit(){
+					var section = document.getElementById("section");
+					var sectionValue = section.options[section.selectedIndex].value;
+					window.location.replace("/api/select-section/" + sectionValue + "?redir=" + "#{redirect}")
+				}

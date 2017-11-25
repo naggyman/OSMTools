@@ -1,0 +1,34 @@
+extends layout
+
+block content
+	.container
+		- var src = ""
+		- if(user.cover) src = user.cover.source
+		img(src=src).img-responsive.center-block
+		h2 #{user.name}
+		if user.start_time
+			- var startdate = new Date(user.start_time)
+			- var startDateDate = startdate.getFullYear() + "/" + (startdate.getMonth() + 1) + "/" + startdate.getDate()
+			- var startDateTime = startdate.toTimeString().substring(0, 8)
+		else
+			- var startDateDate = ""; var startDateTime = "";
+		if user.end_time
+			- var enddate = new Date(user.end_time)
+			- var endDateDate = enddate.getFullYear() + "/" + (enddate.getMonth() + 1) + "/" + enddate.getDate()
+			- var endDateTime = enddate.toTimeString().substring(0, 8)
+		else
+			- var endDateDate = ""; var endDateTime = "";
+
+		- var link = "/api/event/create?name=" + user.name + "&location=" + user.place.name + "&startdate=" + startDateDate + "&starttime=" + startDateTime + "&enddate=" + endDateDate + "&endtime=" + endDateTime + "&description=" + user.description;
+		a(href=link) Add to OSM
+		h5
+			- var href = "https://maps.google.com/?q=" + user.place.name
+			a(href = href) #{user.place.name} (view map)
+		p Organised by:&nbsp;
+			strong #{user.owner.name}
+		p Attending:
+		each person in user.attending.data
+			div #{person.name}
+
+		p #{startDateDate} #{startDateTime} to #{endDateDate} #{endDateTime}
+		p #{user.description}

@@ -1,0 +1,24 @@
+extends layout
+
+block content
+	.container
+		h3 Facebook Integration Setup
+		h4 (Step 1/2) Associate Facebook Group with OSM Section
+
+		p Select a Facebook Group to associate with this Section
+
+		.form-group
+			select(id="sel").form-control
+				each group in user.data
+					option(value =group.id) #{group.name}
+		.row
+			button#select.btn.btn-success.btn-md Select Group
+			script.
+				var button = document.getElementById("select");
+				button.addEventListener("click", submit);
+
+				function submit(){
+					var group = document.getElementById("sel");
+					var groupVal = group.options[group.selectedIndex].value;
+					window.location.replace("/api/select-fb/" + groupVal)
+				}
