@@ -4,13 +4,30 @@
   "description": "Test API for connecting to OSM",
   "main": "osmtools.js",
   "scripts": {
-    "test": "test"
+    "start": "node osmtools.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/naggyman/OSMTools"
   },
   "author": "Morgan French-Stagg",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.15.4",
+    "body-parser": "^1.18.2",
+    "cached-request": "^1.1.2",
+    "connect-redis": "^3.3.2",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.16.2",
+    "express-session": "^1.15.6",
+    "fbgraph": "^1.4.1",
+    "fs": "0.0.1-security",
+    "memory-cache": "^0.2.0",
+    "mongoose": "^4.13.5",
+    "path": "^0.12.7",
     "pug": "^2.0.0-rc.3",
-    "request": "^2.81.0"
+    "redis": "^2.8.0",
+    "redis-streams": "^1.1.0",
+    "request": "^2.83.0",
+    "stream": "0.0.2"
   }
 }

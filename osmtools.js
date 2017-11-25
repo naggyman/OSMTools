@@ -17,7 +17,7 @@ const RedisStore = require('connect-redis')(session);
 app.set('view engine', 'pug');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
-app.use(session({store: new RedisStore(client = api.redisClient, db=1), secret: 'd5@^9YG27*7m@Fm^GxGz2u!&ZvxCXY9WUr7kB6I^8cPi@SlJGGEQc', resave: true, saveUninitialized: true }))
+app.use(session({store: new RedisStore(client = api.redisClient, db=1), secret: secrets.sessionSecret, resave: true, saveUninitialized: true }))
 
 const urlencodedParser = bodyParser.urlencoded({ extended: false })
 
