@@ -107,7 +107,6 @@ app.get('/', function (req, res) {
 /*
  * ERROR HANDLING
  */
-
 app.get('*', function(req, res){
 	res.status(404);
   if (req.accepts('html')) { res.render('error', { title: 'Error', errorType: 'noRoute', url: req.url , includes: api.getIncludes(req)}); return;}
@@ -127,6 +126,6 @@ const checkDecorator = function(req, res, cb, login, section){
 /*
  * PORT LISTENING
  */
-app.listen(3000, function () {
-  console.log("Listening on port 3000");
+app.listen(3001, function () {
+  console.log("Listening on port 3001");
 });
